@@ -1,4 +1,4 @@
-name: inbox-zero-services
+# name: inbox-zero-services
 services:
   db:
     image: postgres
@@ -12,8 +12,8 @@ services:
       - database-data:/var/lib/postgresql/data/
     ports:
       - 5432:5432
-    networks:
-      - inbox-zero-network
+    #networks:
+    #  - inbox-zero-network
 
   redis:
     image: redis
@@ -21,8 +21,8 @@ services:
       - 6380:6379
     volumes:
       - database-data:/data
-    networks:
-      - inbox-zero-network
+    #networks:
+    #  - inbox-zero-network
 
   serverless-redis-http:
     ports:
@@ -34,8 +34,8 @@ services:
       SRH_MODE: env
       SRH_TOKEN: ${UPSTASH_REDIS_TOKEN}
       SRH_CONNECTION_STRING: "redis://redis:6379" # Using `redis` hostname since they're in the same Docker network.
-    networks:
-      - inbox-zero-network
+    #networks:
+    #  - inbox-zero-network
 
   web:
     build:
@@ -48,8 +48,8 @@ services:
       - redis
     ports:
       - "${WEB_PORT:-3000}:3000"
-    networks:
-      - inbox-zero-network
+    #networks:
+    #  - inbox-zero-network
     environment:
       DATABASE_URL: "postgresql://postgres:password@db:5432/inboxzero?schema=public"
       DIRECT_URL: "postgresql://postgres:password@db:5432/inboxzero?schema=public"
@@ -59,5 +59,5 @@ services:
 volumes:
   database-data:
 
-networks:
-  inbox-zero-network:
+# networks:
+#  inbox-zero-network:
