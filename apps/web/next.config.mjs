@@ -17,7 +17,7 @@ const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
   experimental: {
-    serverComponentsExternalPackages: ["@sentry/nextjs", "@sentry/node"],
+    serverComponentsExternalPackages: ["@sentry/nextjs", "@sentry/node", "jiti"],
     instrumentationHook: true,
     turbo: {
       rules: {
