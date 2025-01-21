@@ -15,7 +15,7 @@ SCHEMA >
     `draft` UInt8 `json:$.draft`,
     `inbox` UInt8 `json:$.inbox`,
     `sizeEstimate` UInt64 `json:$.sizeEstimate`,
-    `body` String `json:$.body`,
+    `body` Nullable(String) `json:$.body`,
     `labels` Array(String) `json:$.labels[:]`,
     `attachments` Array(String) `json:$.attachments[:]`
 
