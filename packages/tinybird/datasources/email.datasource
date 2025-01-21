@@ -16,7 +16,7 @@ SCHEMA >
     `inbox` UInt8 `json:$.inbox`,
     `sizeEstimate` UInt64 `json:$.sizeEstimate`,
     `body` Nullable(String) `json:$.body`,
-    `labels` Array(String) `json:$.labels[:]`,
+    `labels` Nullable(Array(String)) `json:$.labels[:]`
     `attachments` Array(String) `json:$.attachments[:]`
 
 ENGINE "ReplacingMergeTree"
