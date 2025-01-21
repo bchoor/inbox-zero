@@ -14,7 +14,9 @@ SCHEMA >
     `sent` UInt8 `json:$.sent`,
     `draft` UInt8 `json:$.draft`,
     `inbox` UInt8 `json:$.inbox`,
-    `sizeEstimate` UInt64 `json:$.sizeEstimate`
+    `sizeEstimate` UInt64 `json:$.sizeEstimate`,
+    `body` String `json:$.body`,
+    `labels` Array(String) `json:$.labels`
 
 ENGINE "ReplacingMergeTree"
 ENGINE_SORTING_KEY ownerEmail, timestamp

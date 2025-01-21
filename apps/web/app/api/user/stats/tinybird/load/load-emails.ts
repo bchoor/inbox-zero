@@ -157,11 +157,20 @@ async function saveBatch(
 
       const unsubscribeLink =
         findUnsubscribeLink(m.textHtml) || m.headers["list-unsubscribe"];
+      
+      const attachments = m.attachments?.map(part => [
+          part.filename,
+          part.mimeType,
+          part.size,
+          part.attachmentId
+        ].join(',')) ?? [];
 
       const tinybirdEmail: TinybirdEmail = {
         ownerEmail,
         threadId: m.threadId,
         gmailMessageId: m.id,
+        labels: m.labelIds ?? [],
+        body: m.textPlain ?? m.textHtml ?? "No body",
         from: m.headers.from,
         fromDomain: extractDomainFromEmail(m.headers.from),
         to: m.headers.to || "Missing",
@@ -175,7 +184,8 @@ async function saveBatch(
         sent: !!m.labelIds?.includes(GmailLabel.SENT),
         draft: !!m.labelIds?.includes(GmailLabel.DRAFT),
         inbox: !!m.labelIds?.includes(GmailLabel.INBOX),
-        sizeEstimate: m.sizeEstimate ?? 0,
+        attachments: m.attachments ?? []
+        // sizeEstimate: m.sizeEstimate ?? 0,
       };
 
       if (!tinybirdEmail.timestamp) {
