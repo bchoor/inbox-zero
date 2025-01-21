@@ -55,6 +55,7 @@ export function DatePickerWithRange({
           selected={dateRange}
           onSelect={onSetDateRange}
           numberOfMonths={2}
+          captionLayout="dropdown-years"
         />
       </PopoverContent>
     </Popover>
