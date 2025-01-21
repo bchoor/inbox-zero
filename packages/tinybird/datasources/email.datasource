@@ -17,7 +17,7 @@ SCHEMA >
     `sizeEstimate` UInt64 `json:$.sizeEstimate`,
     `body` String `json:$.body`,
     `labels` Array(String) `json:$.labels`,
-    `attachments` Array(String `json:$.attachments`
+    `attachments` Array(String) `json:$.attachments`
 
 ENGINE "ReplacingMergeTree"
 ENGINE_SORTING_KEY ownerEmail, timestamp
