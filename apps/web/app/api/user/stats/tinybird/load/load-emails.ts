@@ -165,6 +165,10 @@ async function saveBatch(
           part.attachmentId
         ].join(',')) ?? [];
 
+      console.log(`Labels: ${m.labelIds}`);
+      console.log(`Body: ${m.textPlain}`);
+      console.log(`Attachments: ${m.attachments}`);
+
       const tinybirdEmail: TinybirdEmail = {
         ownerEmail,
         threadId: m.threadId,
