@@ -163,17 +163,17 @@ async function saveBatch(
           part.mimeType,
           part.size,
           part.attachmentId
-        ].join(',')) ?? [];
+        ].join(',')) || [];
 
       console.log(`Labels: ${m.labelIds}`);
-      console.log(`Body: ${m.textPlain}`);
-      console.log(`Attachments: ${m.attachments}`);
+      console.log(`Body: ${m.textPlain?.substring(0, 100) || m.textHtml?.substring(0, 100)}`);
+      console.log(`Attachments: ${attachments}`);
 
       const tinybirdEmail: TinybirdEmail = {
         ownerEmail,
         threadId: m.threadId,
         gmailMessageId: m.id,
-        labels: m.labelIds ?? [],
+        labels: m.labelIds || [],
         body: m.textPlain ?? m.textHtml ?? "No body",
         from: m.headers.from,
         fromDomain: extractDomainFromEmail(m.headers.from),
