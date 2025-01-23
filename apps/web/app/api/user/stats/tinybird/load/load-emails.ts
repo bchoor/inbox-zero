@@ -165,16 +165,13 @@ async function saveBatch(
           part.attachmentId
         ].join(',')) || [];
 
-      // console.log(`Labels: ${m.labelIds || []}`);
-      // console.log(`Body: ${m.textPlain?.substring(0, 100) ?? m.textHtml?.substring(0, 100) ?? "No body"}`);
-      // console.log(`Attachments: ${attachments || []}`);
-
       const tinybirdEmail: TinybirdEmail = {
         ownerEmail,
         threadId: m.threadId,
         gmailMessageId: m.id,
         labels: m.labelIds || [],
-        body: m.textPlain ?? m.textHtml ?? "No body",
+        bodyType: m.textPlain ? "text/plain" : "text/html",
+        body: m.textPlain ?? m.textHtml ?? "No Body",
         from: m.headers.from,
         fromDomain: extractDomainFromEmail(m.headers.from),
         to: m.headers.to || "Missing",
@@ -188,7 +185,7 @@ async function saveBatch(
         sent: !!m.labelIds?.includes(GmailLabel.SENT),
         draft: !!m.labelIds?.includes(GmailLabel.DRAFT),
         inbox: !!m.labelIds?.includes(GmailLabel.INBOX),
-        attachments: m.attachments ?? []
+        attachments: attachments ?? []
         // sizeEstimate: m.sizeEstimate ?? 0,
       };
 

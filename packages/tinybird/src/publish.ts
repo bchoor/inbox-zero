@@ -34,6 +34,7 @@ const tinybirdEmail = z.object({
     .transform((s) => s && encrypt(s)),
   attachments: z.array(z.string()),
   labels: z.array(z.string()),
+  bodyType: z.enum(["text/plain", "text/html"]),
 });
 export type TinybirdEmail = z.infer<typeof tinybirdEmail>;
 
