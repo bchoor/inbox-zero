@@ -165,6 +165,9 @@ model Label {
   userId       String
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  // relations
+  emails       EmailLabel[]
+
   @@unique([gmailLabelId, userId])
   @@unique([name, userId])
 }
@@ -364,6 +367,71 @@ model ApiKey {
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId, isActive])
+}
+
+model Email {
+  id             String       @id @default(cuid())
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  ownerEmail     String
+  threadId       String
+  gmailMessageId String      @unique
+  bodyType       String      @db.VarChar(10)
+  body           String      @db.Text
+  from           String
+  fromDomain     String
+  to             String
+  toDomain       String
+  subject        String?
+  timestamp      DateTime
+  unsubscribeLink String?
+  read           Boolean     @default(false)
+  sent           Boolean     @default(false)
+  draft          Boolean     @default(false)
+  inbox          Boolean     @default(true)
+  
+  // Relations
+  labels         EmailLabel[]
+  attachments    Attachment[]
+
+  // Indexes
+  @@index([bodyType])
+  @@index([fromDomain])
+  @@index([toDomain])
+  @@index([read])
+  @@index([sent])
+  @@index([draft])
+  @@index([inbox])
+  @@index([timestamp])
+}
+
+model EmailLabel {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+  emailId   String
+  labelId   String
+  
+  email     Email    @relation(fields: [emailId], references: [id], onDelete: Cascade)
+  label     Label    @relation(fields: [labelId], references: [id], onDelete: Cascade)
+
+  @@unique([emailId, labelId])
+}
+
+model Attachment {
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now())
+  emailId     String
+  filename    String
+  mimeType    String
+  size        Int
+  attachmentId String
+  
+  email       Email    @relation(fields: [emailId], references: [id], onDelete: Cascade)
+
+  @@index([filename])
+  @@index([mimeType])
 }
 
 enum ActionType {
