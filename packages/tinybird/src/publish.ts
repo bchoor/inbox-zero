@@ -28,6 +28,12 @@ const tinybirdEmail = z.object({
   draft: z.boolean(),
   inbox: z.boolean(),
   sizeEstimate: z.number().default(0), // Estimated size in bytes
+  body: z
+    .string()
+    .optional()
+    .transform((s) => s && encrypt(s)),
+  attachments: z.array(z.string()),
+  labels: z.array(z.string()),
 });
 export type TinybirdEmail = z.infer<typeof tinybirdEmail>;
 
