@@ -10,6 +10,7 @@ import { findUnsubscribeLink } from "@/utils/parse/parseHtml.server";
 import { env } from "@/env";
 import { GmailLabel } from "@/utils/gmail/label";
 import { createScopedLogger } from "@/utils/logger";
+import { prisma } from "@/utils/prisma";
 
 const PAGE_SIZE = 20; // avoid setting too high because it will hit the rate limit
 const PAUSE_AFTER_RATE_LIMIT = 10_000;
@@ -204,7 +205,69 @@ async function saveBatch(
 
   logger.info("Publishing", { count: emailsToPublish.length });
 
+  // Publish to Tinybird
   await publishEmail(emailsToPublish);
+
+  // Save to Prisma DB
+  try {
+    await prisma.$transaction(async (tx) => {
+      for (const email of emailsToPublish) {
+        // Create or get existing labels
+        const labelPromises = email.labels.map((labelName) =>
+          tx.label.upsert({
+            where: { name: labelName },
+            create: { name: labelName },
+            update: {},
+          })
+        );
+        const labels = await Promise.all(labelPromises);
+
+        // Create email with attachments
+        const createdEmail = await tx.email.create({
+          data: {
+            ownerEmail: email.ownerEmail,
+            threadId: email.threadId,
+            gmailMessageId: email.gmailMessageId,
+            bodyType: email.bodyType,
+            body: email.body,
+            from: email.from,
+            fromDomain: email.fromDomain,
+            to: email.to,
+            toDomain: email.toDomain,
+            subject: email.subject || "",
+            timestamp: new Date(email.timestamp),
+            unsubscribeLink: email.unsubscribeLink,
+            read: email.read,
+            sent: email.sent,
+            draft: email.draft,
+            inbox: email.inbox,
+            // Create attachments
+            attachments: {
+              create: email.attachments.map((att) => {
+                const [filename, mimeType, size, attachmentId] = att.split(",");
+                return {
+                  filename,
+                  mimeType,
+                  size: parseInt(size, 10),
+                  attachmentId,
+                };
+              }),
+            },
+            // Link labels
+            labels: {
+              create: labels.map((label) => ({
+                labelId: label.id,
+              })),
+            },
+          },
+        });
+      }
+    });
+
+    logger.info("Saved batch to Prisma DB", { count: emailsToPublish.length });
+  } catch (error) {
+    logger.error("Error saving to Prisma DB", { error });
+  }
 
   return res;
 }
